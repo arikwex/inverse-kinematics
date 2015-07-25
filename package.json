@@ -1,0 +1,27 @@
+{
+  "name": "inverse-kinematics",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arikwex/inverse-kinematics.git"
+  },
+  "author": "Ariel Wexler <arielwex@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arikwex/inverse-kinematics/issues"
+  },
+  "homepage": "https://github.com/arikwex/inverse-kinematics",
+  "devDependencies": {
+    "quick-sip": "^0.1.5"
+  },
+  "dependencies": {
+    "jquery": "^2.1.4",
+    "sylvester": "0.0.21",
+    "underscore": "^1.8.3"
+  }
+}
