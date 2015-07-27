@@ -17,11 +17,19 @@
   },
   "homepage": "https://github.com/arikwex/inverse-kinematics",
   "devDependencies": {
+    "aliasify": "^1.7.2",
+    "coffeeify": "^1.1.0",
+    "gulp": "^3.9.0",
     "quick-sip": "^0.1.5"
   },
   "dependencies": {
     "jquery": "^2.1.4",
     "sylvester": "0.0.21",
     "underscore": "^1.8.3"
+  },
+  "aliasify": {
+    "aliases": {
+      "animation": "./app/scripts/animation"
+    }
   }
 }
