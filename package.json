@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "jquery": "^2.1.4",
+    "p2": "^0.7.0",
     "sylvester": "0.0.21",
     "underscore": "^1.8.3"
   },
