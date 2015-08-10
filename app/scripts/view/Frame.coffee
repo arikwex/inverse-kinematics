@@ -1,12 +1,10 @@
 $ = require('jquery')
 animation = require('animation')
-CanvasRenderer = require('./CanvasRenderer');
 
 class Frame
   constructor: ->
     @initCanvas()
-    @objects = []
-    @world = null
+    @env = null
     animation.addCallback((dT) => @animationCallback(dT))
     return
 
@@ -21,34 +19,25 @@ class Frame
     @gfx = (@$el.get(0)).getContext('2d')
     return
 
-  setWorld: (world) ->
-    @world = world
-
   animationCallback: (dT) ->
     @update(dT)
     @render(@gfx)
     return
 
   update: (dT) ->
-    if @world
-      if window.lowerArm
-        q = (lowerArm.angle - (-2.4)) * window.Q
-        lowerArm.applyForceLocal(p2.vec2.fromValues(0, q), p2.vec2.fromValues(-90, 0))
-        lowerArm.applyForceLocal(p2.vec2.fromValues(0, -q), p2.vec2.fromValues(-110, 0))
-      if window.upperArm
-        w = (upperArm.angle - (0.0)) * window.W
-        upperArm.applyForceLocal(p2.vec2.fromValues(0, w), p2.vec2.fromValues(-90, 0))
-        upperArm.applyForceLocal(p2.vec2.fromValues(0, -w), p2.vec2.fromValues(-110, 0))
-      @world.step(dT)
+    if @env
+      @env.update(dT)
     return
 
   render: (gfx) ->
-    gfx.setTransform(1, 0, 0, 1, 0, 0)
+    gfx.resetTransform()
     gfx.clearRect(0, 0, @width, @height)
-    if @world
-      for body in @world.bodies
-        CanvasRenderer.render(gfx, body)
+    if @env
+      @env.render(gfx)
     return
 
+  setEnvironment: (env) ->
+    @env = env
+    return
 
 module.exports = Frame

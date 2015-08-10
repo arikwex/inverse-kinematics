@@ -1,51 +1,54 @@
 $ = require('jquery')
-p2 = require('p2')
-window.p2 = p2;
-p2Renderer = require('p2/build/p2.renderer')
-animation = require('animation')
 Frame = require('./view/Frame')
+Environment = require('./model/Environment')
 
-app = new Frame()
-$('app-body').append(app.$el)
+Skeleton = require('./model/Skeleton')
+Limb = require('./model/Limb')
+SegmentBuilder = require('./model/SegmentBuilder')
 
-window.app = app
-window.animation = animation
+# Create Canvas
+frame = new Frame()
+
+# Create environment for physics & entities
+env = new Environment()
+world = env.getWorld()
+
+# Create a Skeletal model with Limbs
+BasicArm = new Skeleton({
+  x: 0
+  y: 0
+  angle: 0
+})
+BasicArm.addLimb({
+  limb: new Limb(world)
+    .addSegment(new SegmentBuilder(world)
+      .startPadding(20)
+      .endPadding(20)
+      .bodySize(100, 20)
+      .build())
+    .addSegment(new SegmentBuilder(world)
+      .startPadding(30)
+      .endPadding(0)
+      .bodySize(100, 10)
+      .build())
+  mountX: 0
+  mountY: 0
+})
+env.addEntity(BasicArm)
+
+# Add the environment to the frame and attach it to the DOM
+frame.setEnvironment(env)
+$('app-body').append(frame.$el)
+
+# Global hooks for debugging
+window.frame = frame
+window.animation = require('animation')
+window.p2 = require('p2')
+window.ENUM = require('enum')
 window.$ = $
 
-window.Q = -10000
-window.W = -10000
 
-# Create the world
-world = new p2.World({
-  gravity : [0, 980]
-});
-
-# Pre-fill object pools. Completely optional but good for performance!
-world.overlapKeeper.recordPool.resize(16)
-world.islandManager.islandPool.resize(128)
-world.islandManager.nodePool.resize(1024)
-world.narrowphase.contactEquationPool.resize(1024)
-world.narrowphase.frictionEquationPool.resize(1024)
-
-# Set stiffness of all contacts and constraints
-world.setGlobalStiffness(1e8)
-# Max number of solver iterations to do
-world.solver.iterations = 20
-# Solver error tolerance
-world.solver.tolerance = 0.02
-# Enables sleeping of bodies
-world.sleepMode = p2.World.NO_SLEEPING
-
-# Compute max/min positions of circles
-xmin = (0)
-xmax = (app.width)
-ymin = (0)
-ymax = (app.height)
-
-GROUND = 1
-SKELETON = 4
-OTHER = 8
-
+###
 # Base
 base = new p2.Body({
   mass: 3000
@@ -94,20 +97,4 @@ lowerUpperArmJoint= new p2.RevoluteConstraint(lowerArm, upperArm, {
   localPivotB: [-100, 0]
 })
 world.addConstraint(lowerUpperArmJoint);
-
-# Create bottom plane
-plane = new p2.Body({
-  position : [0, ymax],
-  angle: Math.PI,
-})
-plane.addShape(new p2.Plane({
-  collisionGroup: GROUND
-  collisionMask: SKELETON
-}));
-world.addBody(plane);
-
-# Start demo
-app.setWorld(world)
-window.world = world;
-window.lowerArm = lowerArm
-window.upperArm = upperArm
+###

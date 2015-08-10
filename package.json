@@ -30,7 +30,9 @@
   },
   "aliasify": {
     "aliases": {
-      "animation": "./app/scripts/animation"
+      "animation": "./app/scripts/animation",
+      "enum": "./app/scripts/enum",
+      "renderer": "./app/scripts/view/CanvasRenderer"
     }
   }
 }
