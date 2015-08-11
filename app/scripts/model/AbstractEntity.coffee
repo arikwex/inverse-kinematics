@@ -3,7 +3,7 @@ module.exports = class AbstractEntity
     throw 'Abstract Class Entity cannot be instantiated'
 
   update: (dT) ->
-    return
+    throw 'Abstract Class Entity must implement [update] method'
 
   render: (gfx) ->
-    return
+    throw 'Abstract Class Entity must implement [render] method'

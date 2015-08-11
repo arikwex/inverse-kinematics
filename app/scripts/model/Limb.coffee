@@ -1,8 +1,8 @@
 p2 = require('p2')
-Renderer = require('renderer')
 
 module.exports = class Limb
   constructor: (@world) ->
+    @_visualization = 'limb'
     @segments = []
     return
 
@@ -22,10 +22,22 @@ module.exports = class Limb
     @segments.push(newSegment)
     return @
 
-  update: (dT) ->
+  getFirstSegment: () ->
+    if (@segments.length > 0)
+      return @segments[0]
+    return null
+
+  smartPositioning: (startX, startY) ->
+    for segment in @segments
+      dX = Math.cos(segment.getAngle()) * segment.width
+      dY = Math.sin(segment.getAngle()) * segment.width
+      segment.body.position[0] = startX + dX * 0.5
+      segment.body.position[1] = startY + dY * 0.5
+      startX += dX
+      startY += dY
     return
 
-  render: (gfx) ->
+  update: (dT) ->
     for segment in @segments
-      Renderer.render(gfx, segment)
+      segment.update(dT)
     return

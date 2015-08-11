@@ -32,7 +32,10 @@
     "aliases": {
       "animation": "./app/scripts/animation",
       "enum": "./app/scripts/enum",
-      "renderer": "./app/scripts/view/CanvasRenderer"
+      "renderer": "./app/scripts/view/CanvasRenderer",
+      "model": "./app/scripts/model",
+      "view": "./app/scripts/view",
+      "controller": "./app/scripts/controller"
     }
   }
 }

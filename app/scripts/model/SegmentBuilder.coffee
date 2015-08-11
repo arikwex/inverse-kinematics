@@ -10,11 +10,15 @@ module.exports = class SegmentBuilder
     segment = new Segment({
       startPadding: @_startPadding
       endPadding: @_endPadding
+      startAngle: @_angle
       width: @_width
       height: @_height
       world: @world
     })
     return segment
+
+  setAngle: (@_angle) ->
+    return @
 
   startPadding: (@_startPadding) ->
     return @

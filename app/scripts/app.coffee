@@ -13,26 +13,32 @@ frame = new Frame()
 env = new Environment()
 world = env.getWorld()
 
+window.DANGLE = -0.8
 # Create a Skeletal model with Limbs
 BasicArm = new Skeleton({
-  x: 0
-  y: 0
+  world: world
+  x: 500
+  y: 500
+  width: 150
+  height: 40
   angle: 0
 })
 BasicArm.addLimb({
   limb: new Limb(world)
     .addSegment(new SegmentBuilder(world)
-      .startPadding(20)
+      .startPadding(30)
       .endPadding(20)
       .bodySize(100, 20)
+      .setAngle(-90)
       .build())
     .addSegment(new SegmentBuilder(world)
       .startPadding(30)
       .endPadding(0)
       .bodySize(100, 10)
+      .setAngle(-24)
       .build())
-  mountX: 0
-  mountY: 0
+  mountX: 75
+  mountY: 20
 })
 env.addEntity(BasicArm)
 

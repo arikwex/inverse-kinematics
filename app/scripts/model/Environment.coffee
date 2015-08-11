@@ -1,5 +1,6 @@
 p2 = require('p2')
 COLLISION = require('enum/collision')
+Renderer = require('renderer')
 
 module.exports = class Environment
   constructor: () ->
@@ -64,5 +65,5 @@ module.exports = class Environment
     gfx.lineTo(2000, 600)
     gfx.stroke()
     for entity in @entities
-      entity.render(gfx)
+      Renderer.render(gfx, entity)
     return

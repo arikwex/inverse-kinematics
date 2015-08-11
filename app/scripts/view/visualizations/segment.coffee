@@ -1,5 +1,5 @@
 module.exports = {
-  render: (gfx, segment) ->
+  render: (self, gfx, segment) ->
     angle = segment.getAngle()
     x = segment.getX()
     y = segment.getY()

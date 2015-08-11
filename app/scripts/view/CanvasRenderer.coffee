@@ -2,6 +2,8 @@ p2 = require('p2');
 
 module.exports = {
   visualizations: {
+    'skeleton': require('./visualizations/skeleton')
+    'limb': require('./visualizations/limb')
     'segment': require('./visualizations/segment')
   }
 
@@ -10,6 +12,6 @@ module.exports = {
       visualization = obj._visualization
       renderer = @visualizations[visualization]
       if (renderer)
-        renderer.render(gfx, obj)
+        renderer.render(this, gfx, obj)
     return
 }
