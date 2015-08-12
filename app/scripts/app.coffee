@@ -2,9 +2,7 @@ $ = require('jquery')
 Frame = require('./view/Frame')
 Environment = require('./model/Environment')
 
-Skeleton = require('./model/Skeleton')
-Limb = require('./model/Limb')
-SegmentBuilder = require('./model/SegmentBuilder')
+ArmMachine = require('./model/machines/ArmMachine')
 
 # Create Canvas
 frame = new Frame()
@@ -15,6 +13,16 @@ world = env.getWorld()
 
 window.DANGLE = -0.8
 # Create a Skeletal model with Limbs
+armMachine = new ArmMachine({
+  world: world
+  x: 500
+  y: 500
+  width: 150
+  height: 40
+  angle: 0
+})
+env.addEntity(armMachine)
+###
 BasicArm = new Skeleton({
   world: world
   x: 500
@@ -41,6 +49,7 @@ BasicArm.addLimb({
   mountY: 20
 })
 env.addEntity(BasicArm)
+###
 
 # Add the environment to the frame and attach it to the DOM
 frame.setEnvironment(env)

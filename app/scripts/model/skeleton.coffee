@@ -31,7 +31,7 @@ module.exports = class Skeleton extends AbstractEntity
 
     # Smart-Positioning of all limb segments
     limb.smartPositioning(@x + mountX, @y + mountY)
-    return
+    return limb
 
   _linkTorsoToWorld: () ->
     @body = new p2.Body({
@@ -61,13 +61,3 @@ module.exports = class Skeleton extends AbstractEntity
 
   getAngle: () ->
     return @body.angle
-###
-if window.lowerArm
-  q = (lowerArm.angle - (-2.4)) * window.Q
-  lowerArm.applyForceLocal(p2.vec2.fromValues(0, q), p2.vec2.fromValues(-90, 0))
-  lowerArm.applyForceLocal(p2.vec2.fromValues(0, -q), p2.vec2.fromValues(-110, 0))
-if window.upperArm
-  w = (upperArm.angle - (0.0)) * window.W
-  upperArm.applyForceLocal(p2.vec2.fromValues(0, w), p2.vec2.fromValues(-90, 0))
-  upperArm.applyForceLocal(p2.vec2.fromValues(0, -w), p2.vec2.fromValues(-110, 0))
-###
