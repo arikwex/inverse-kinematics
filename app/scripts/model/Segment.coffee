@@ -15,6 +15,7 @@ module.exports = class Segment
       @world } = options
     @_visualization = 'segment'
     @_linkSegmentToWorld()
+    @desiredAngle = 0
     return
 
   setPrevious: (@previous) ->
@@ -27,7 +28,7 @@ module.exports = class Segment
     @body = new p2.Body({
       mass: @width * @height * DENSITY
       angle: @startAngle * (Math.PI / 180.0)
-      position: [500, 500],
+      position: [0, 0],
       angularDamping: 0.99
       damping: 0.99
     })
@@ -40,12 +41,16 @@ module.exports = class Segment
     })
     @body.addShape(muscle)
     muscle.position = [@startPadding / 2.0 - @endPadding / 2.0, 0]
+    muscle.material = window.MUSCLE
     @world.addBody(@body)
     return
 
   update: (dT) ->
     if @controller
-      torque = @controller.step(@desiredAngle, @getAngle(), dT)
+      desired = @desiredAngle
+      observed = @getRelativeAngle()
+      diff = @wrapDiff(desired - observed)
+      torque = @controller.step(diff, 0, dT)
       @applyTorque(torque)
     return
 
@@ -53,8 +58,23 @@ module.exports = class Segment
     @body.angularForce += magnitude * 1000
     return
 
+  wrapDiff: (a) ->
+    while a > Math.PI
+      a -= Math.PI
+    while a < -Math.PI
+      a += Math.PI
+    return a
+
+  getRelativeAngle: () ->
+    if @previous
+      return @getAngle() - @previous.getAngle()
+    return @getAngle()
+
   setDesiredAngle: (@desiredAngle) ->
     return
+
+  getDesiredAngle: () ->
+    return @desiredAngle
 
   getX: () ->
     return @body.position[0]

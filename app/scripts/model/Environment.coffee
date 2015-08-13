@@ -29,6 +29,14 @@ module.exports = class Environment
     # Configure solver
     @world.solver.iterations = 20            # Max number of solver iterations to do
     @world.solver.tolerance = 0.02           # Solver error tolerance
+
+    #
+    window.GROUND = new p2.Material()
+    window.MUSCLE = new p2.Material()
+    window.TEST = new p2.ContactMaterial(window.GROUND, window.MUSCLE, {
+      friction : 100.0
+    })
+    @world.addContactMaterial(window.TEST)
     return
 
   initGround: () ->
@@ -41,6 +49,7 @@ module.exports = class Environment
       collisionGroup: COLLISION.GROUND
       collisionMask: COLLISION.MUSCLE
     }));
+    plane.shapes[0].material = window.GROUND
     @world.addBody(plane);
     return
 

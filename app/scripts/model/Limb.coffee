@@ -1,6 +1,7 @@
 p2 = require('p2')
+AbstractEntity = require('./AbstractEntity')
 
-module.exports = class Limb
+module.exports = class Limb extends AbstractEntity
   constructor: (@world) ->
     @_visualization = 'limb'
     @segments = []
@@ -27,14 +28,31 @@ module.exports = class Limb
       return @segments[0]
     return null
 
-  smartPositioning: (startX, startY) ->
+  smartPositioning: () ->
+    startAngle = @skeleton.getAngle()
+    C = Math.cos(startAngle)
+    S = Math.sin(startAngle)
+    startX = @skeleton.getX() + C * @mountX - S * @mountY
+    startY = @skeleton.getY() + S * @mountX + C * @mountY
     for segment in @segments
-      dX = Math.cos(segment.getAngle()) * segment.width
-      dY = Math.sin(segment.getAngle()) * segment.width
+      dA = segment.getAngle()
+      startAngle += dA
+      dX = Math.cos(startAngle) * segment.width
+      dY = Math.sin(startAngle) * segment.width
       segment.body.position[0] = startX + dX * 0.5
       segment.body.position[1] = startY + dY * 0.5
+      segment.body.angle = startAngle
       startX += dX
       startY += dY
+    return
+
+  setSkeleton: (@skeleton) ->
+    firstSegment = @.getFirstSegment()
+    if firstSegment
+      firstSegment.setPrevious(@skeleton)
+    return
+
+  setMountingPoint: (@mountX, @mountY) ->
     return
 
   update: (dT) ->

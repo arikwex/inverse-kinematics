@@ -1,4 +1,4 @@
-module.exports = class PIDController
+module.exports = class RampController
   constructor: (options) ->
     { @Kp, @Ki, @Kd
       @maxAccumulated
@@ -6,6 +6,7 @@ module.exports = class PIDController
 
     # Controller Max Gain
     @_maxGain =  @_maxGain || 1
+    @_ramp = 1
 
     # Integration variables
     @_accumulated = 0
@@ -22,11 +23,11 @@ module.exports = class PIDController
     # Compute derivate term
     derivative = 0
     if @_lastDifference
-      derivative = (difference - @_lastDifference) / dT
-    @_lastDifference = difference
+      derivative = (observed - @_lastDifference) / dT
+    @_lastDifference = observed
 
     # Manage integral term
-    @_accumulated += difference * dT
+    @_accumulated += difference * @_ramp * dT
     if @_accumulated > @maxAccumulated
       @_accumulated = @maxAccumulated
     else if @_accumulated < -@maxAccumulated
@@ -42,6 +43,12 @@ module.exports = class PIDController
       gain = @maxGain
     else if gain < -@maxGain
       gain = -@maxGain
+
+    # Ramp behavior
+    # @_accumulated *= 1.0 / (0.5 + Math.abs(derivative) * 0.2)
+    # @_ramp *= 1.0 / (0.5 + Math.abs(derivative) * 8.0)
+    # if @_ramp < 1
+    #   @_ramp = 1
 
     # Return thresholded gain
     return gain

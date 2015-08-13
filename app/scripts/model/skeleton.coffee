@@ -30,13 +30,16 @@ module.exports = class Skeleton extends AbstractEntity
       @world.addConstraint(joint);
 
     # Smart-Positioning of all limb segments
-    limb.smartPositioning(@x + mountX, @y + mountY)
+    limb.setSkeleton(@)
+    limb.setMountingPoint(mountX, mountY)
+    limb.smartPositioning()
     return limb
 
   _linkTorsoToWorld: () ->
     @body = new p2.Body({
       mass: @width * @height * DENSITY
       position: [@x, @y]
+      angle: @angle
     })
     torso = new p2.Box({
       width: @width
