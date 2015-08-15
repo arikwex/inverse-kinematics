@@ -1,10 +1,21 @@
 p2 = require('p2')
 AbstractEntity = require('./AbstractEntity')
+COLLISION = require('enum/collision')
 
 module.exports = class Limb extends AbstractEntity
   constructor: (@world) ->
     @_visualization = 'limb'
     @segments = []
+    return
+
+  setCollisionGroup: (group) ->
+    for segment in @segments
+      segment.setCollisionGroup(group)
+    return
+
+  setCollisionMask: (mask) ->
+    for segment in @segments
+      segment.setCollisionMask(mask)
     return
 
   addSegment: (newSegment) ->
@@ -17,11 +28,26 @@ module.exports = class Limb extends AbstractEntity
         localPivotA:[previousSegment.width / 2.0, 0]
         localPivotB:[-newSegment.width / 2.0, 0]
       })
-      @world.addConstraint(joint);
+      newSegment.setPreviousConstraint(joint)
+      previousSegment.setNextConstraint(joint)
+      @world.addConstraint(joint)
 
     # Track the new segment
+    newSegment.setLimb(@)
     @segments.push(newSegment)
     return @
+
+  removeSegment: (segmentToRemove) ->
+    indexToRemove = 0
+    remove = false
+    for segment in @segments
+      if segment == segmentToRemove
+        remove = true
+        break
+      indexToRemove++
+    if remove
+      @segments.splice(indexToRemove, 1)
+    return
 
   getFirstSegment: () ->
     if (@segments.length > 0)
@@ -52,10 +78,34 @@ module.exports = class Limb extends AbstractEntity
       firstSegment.setPrevious(@skeleton)
     return
 
+  getEnv: () ->
+    return @skeleton.getEnv()
+
   setMountingPoint: (@mountX, @mountY) ->
     return
 
   update: (dT) ->
     for segment in @segments
       segment.update(dT)
+    return
+
+  powerDown: () ->
+    for segment in @segments
+      segment.powerDown()
+    return
+
+  disconnect: () ->
+    if (@segments.length > 0)
+      segment = @segments[0]
+      segment.disconnectPrevious()
+    @skeleton.removeLimb(@)
+    @getEnv().addEntity(@)
+    @setCollisionGroup(COLLISION.MUSCLE)
+    @setCollisionMask(COLLISION.ALL)
+    return
+
+  dispose: () ->
+    while @segments.length > 0
+      @segments[0].dispose()
+    @skeleton.removeLimb(@)
     return

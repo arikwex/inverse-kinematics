@@ -22,20 +22,20 @@ module.exports = class PIDController
     # Compute derivate term
     derivative = 0
     if @_lastDifference
-      derivative = (difference - @_lastDifference) / dT
+      derivative = (@_lastDifference - difference) / dT
     @_lastDifference = difference
 
     # Manage integral term
-    @_accumulated += difference * dT
+    @_accumulated += difference * dT * Math.abs(difference)
     if @_accumulated > @maxAccumulated
       @_accumulated = @maxAccumulated
     else if @_accumulated < -@maxAccumulated
       @_accumulated = -@maxAccumulated
 
     # Compute PID gain
-    gain =  difference * @Kp
+    gain =  difference * @Kp * (Math.abs(difference))
     gain += @_accumulated * @Ki
-    gain += derivative * @Kd
+    gain += derivative * @Kd * 1.0 / (Math.abs(difference) + 1.0)
 
     # Threshold the gain
     if gain > @maxGain

@@ -47,8 +47,8 @@ module.exports = class Environment
     })
     plane.addShape(new p2.Plane({
       collisionGroup: COLLISION.GROUND
-      collisionMask: COLLISION.MUSCLE
-    }));
+      collisionMask: COLLISION.ALL
+    }))
     plane.shapes[0].material = window.GROUND
     @world.addBody(plane);
     return
@@ -57,7 +57,20 @@ module.exports = class Environment
     return @world
 
   addEntity: (entity) ->
+    entity.setEnv(@)
     @entities.push(entity)
+    return
+
+  removeEntity: (entityToRemove) ->
+    indexToRemove = 0
+    remove = false
+    for entity in @entities
+      if entity == entityToRemove
+        remove = true
+        break
+      indexToRemove++
+    if remove
+      @entities.splice(indexToRemove, 1)
     return
 
   update: (dT) ->

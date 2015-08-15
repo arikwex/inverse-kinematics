@@ -27,6 +27,7 @@ module.exports = class Skeleton extends AbstractEntity
         localPivotA:[mountX, mountY]
         localPivotB:[-firstSegment.width / 2.0, 0]
       })
+      firstSegment.setPreviousConstraint(joint)
       @world.addConstraint(joint);
 
     # Smart-Positioning of all limb segments
@@ -34,6 +35,18 @@ module.exports = class Skeleton extends AbstractEntity
     limb.setMountingPoint(mountX, mountY)
     limb.smartPositioning()
     return limb
+
+  removeLimb: (limbToRemove) ->
+    indexToRemove = 0
+    remove = false
+    for limb in @limbs
+      if limb == limbToRemove
+        remove = true
+        break
+      indexToRemove++
+    if remove
+      @limbs.splice(indexToRemove, 1)
+    return
 
   _linkTorsoToWorld: () ->
     @body = new p2.Body({
@@ -45,7 +58,10 @@ module.exports = class Skeleton extends AbstractEntity
       width: @width
       height: @height
       collisionGroup: COLLISION.MUSCLE
-      collisionMask: COLLISION.GROUND | COLLISION.MUSCLE
+      collisionMask: COLLISION.GROUND |
+                     COLLISION.MUSCLE |
+                     COLLISION.MUSCLE_FRONT |
+                     COLLISION.MUSCLE_BACK
     })
     @body.addShape(torso)
     @world.addBody(@body)
@@ -56,6 +72,13 @@ module.exports = class Skeleton extends AbstractEntity
       limb.update(dT)
     return
 
+  dispose: () ->
+    while @limbs.length > 0
+      @limbs[0].dispose()
+    @world.removeBody(@body)
+    @env.removeEntity(@)
+    return
+
   getX: () ->
     return @body.position[0]
 
@@ -64,3 +87,6 @@ module.exports = class Skeleton extends AbstractEntity
 
   getAngle: () ->
     return @body.angle
+
+  disconnectNext: () ->
+    return

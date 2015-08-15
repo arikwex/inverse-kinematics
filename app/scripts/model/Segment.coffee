@@ -1,5 +1,4 @@
 p2 = require('p2')
-COLLISION = require('enum/collision')
 PIDController = require('controller/PIDController')
 
 DENSITY = 0.001
@@ -15,7 +14,11 @@ module.exports = class Segment
       @world } = options
     @_visualization = 'segment'
     @_linkSegmentToWorld()
-    @desiredAngle = 0
+    @desiredAngle = @startAngle * Math.PI / 180.0
+    @begin = 0
+    @powered = true
+    @next = null
+    @previous = null
     return
 
   setPrevious: (@previous) ->
@@ -24,20 +27,69 @@ module.exports = class Segment
   setNext: (@next) ->
     return
 
+  setPreviousConstraint: (@previousConstraint) ->
+    return
+
+  setNextConstraint: (@nextConstraint) ->
+    return
+
+  setLimb: (@limb) ->
+    return
+
+  powerDown: () ->
+    @powered = false
+    if @next != null
+      @next.powerDown()
+    return
+
+  disconnectPrevious: () ->
+    if @previousConstraint != null
+      @powerDown()
+      @world.removeConstraint(@previousConstraint)
+      @previousConstraint = null
+      if @previous
+        @previous.disconnectNext()
+    return
+
+  disconnectNext: () ->
+    if @nextConstraint != null
+      @powerDown()
+      @world.removeConstraint(@nextConstraint)
+      @nextConstraint = null
+      if @next
+        @next.disconnectPrevious()
+    return
+
+  dispose: () ->
+    @disconnectPrevious()
+    @disconnectNext()
+    @world.removeBody(@body)
+    @limb.removeSegment(@)
+    @body = null
+    return
+
+  setCollisionGroup: (group) ->
+    for shape in @body.shapes
+      shape.collisionGroup = group
+    return
+
+  setCollisionMask: (mask) ->
+    for shape in @body.shapes
+      shape.collisionMask = mask
+    return
+
   _linkSegmentToWorld: () ->
     @body = new p2.Body({
       mass: @width * @height * DENSITY
       angle: @startAngle * (Math.PI / 180.0)
       position: [0, 0],
-      angularDamping: 0.99
-      damping: 0.99
+      angularDamping: 0.2
+      damping: 0.2
     })
     @muscleLength = @width - (@startPadding + @endPadding)
     muscle = new p2.Box({
       width: @muscleLength
       height: @height
-      collisionGroup: COLLISION.MUSCLE
-      collisionMask: COLLISION.GROUND | COLLISION.MUSCLE
     })
     @body.addShape(muscle)
     muscle.position = [@startPadding / 2.0 - @endPadding / 2.0, 0]
@@ -46,12 +98,14 @@ module.exports = class Segment
     return
 
   update: (dT) ->
-    if @controller
+    if @controller and @begin > 0.2 and @powered
       desired = @desiredAngle
       observed = @getRelativeAngle()
       diff = @wrapDiff(desired - observed)
       torque = @controller.step(diff, 0, dT)
       @applyTorque(torque)
+    else
+      @begin += dT
     return
 
   applyTorque: (magnitude) ->

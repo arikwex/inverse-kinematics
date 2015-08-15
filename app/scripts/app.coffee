@@ -2,7 +2,7 @@ $ = require('jquery')
 Frame = require('./view/Frame')
 Environment = require('./model/Environment')
 
-ArmMachine = require('./model/machines/ArmMachine')
+SpiderMachine = require('./model/machines/SpiderMachine')
 
 # Create Canvas
 frame = new Frame()
@@ -12,7 +12,7 @@ env = new Environment()
 world = env.getWorld()
 
 # Create a Skeletal model with Limbs
-armMachine = new ArmMachine({
+spiderMachine = new SpiderMachine({
   world: world
   x: 500
   y: 400
@@ -20,7 +20,10 @@ armMachine = new ArmMachine({
   width: 150
   height: 40
 })
-env.addEntity(armMachine)
+env.addEntity(spiderMachine)
+
+# TUNER
+
 
 # Add the environment to the frame and attach it to the DOM
 frame.setEnvironment(env)
