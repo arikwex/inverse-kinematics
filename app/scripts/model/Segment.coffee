@@ -1,7 +1,7 @@
 p2 = require('p2')
 PIDController = require('controller/PIDController')
 
-DENSITY = 0.001
+DENSITY = 0.004
 
 module.exports = class Segment
   constructor: (options) ->
@@ -19,6 +19,7 @@ module.exports = class Segment
     @powered = true
     @next = null
     @previous = null
+    @txtr = null
     return
 
   setPrevious: (@previous) ->
@@ -68,6 +69,18 @@ module.exports = class Segment
     @body = null
     return
 
+  setTexture: (options) ->
+    { width
+      height
+      src } = options
+    @txtr = {
+      image: new Image()
+      width: width
+      height: height
+    }
+    @txtr.image.src = src
+    return
+
   setCollisionGroup: (group) ->
     for shape in @body.shapes
       shape.collisionGroup = group
@@ -83,8 +96,8 @@ module.exports = class Segment
       mass: @width * @height * DENSITY
       angle: @startAngle * (Math.PI / 180.0)
       position: [0, 0],
-      angularDamping: 0.2
-      damping: 0.2
+      angularDamping: 0.02
+      damping: 0.02
     })
     @muscleLength = @width - (@startPadding + @endPadding)
     muscle = new p2.Box({
@@ -144,3 +157,6 @@ module.exports = class Segment
 
   getMuscleLength: () ->
     return @muscleLength
+
+  getTexture: () ->
+    return @txtr

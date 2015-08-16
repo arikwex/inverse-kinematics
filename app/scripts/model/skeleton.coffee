@@ -2,7 +2,7 @@ p2 = require('p2')
 AbstractEntity = require('./AbstractEntity')
 COLLISION = require('enum/collision')
 
-DENSITY = 0.005
+DENSITY = 0.003
 
 module.exports = class Skeleton extends AbstractEntity
   constructor: (options) ->
@@ -15,6 +15,7 @@ module.exports = class Skeleton extends AbstractEntity
     @_visualization = 'skeleton'
     @limbs = []
     @_linkTorsoToWorld()
+    @txtr = null
 
   addLimb: (options) ->
     {limb, mountX, mountY} = options
@@ -90,3 +91,18 @@ module.exports = class Skeleton extends AbstractEntity
 
   disconnectNext: () ->
     return
+
+  setTexture: (options) ->
+    { width
+      height
+      src } = options
+    @txtr = {
+      image: new Image()
+      width: width
+      height: height
+    }
+    @txtr.image.src = src
+    return
+
+  getTexture: () ->
+    return @txtr

@@ -31,7 +31,8 @@ class Frame
 
   render: (gfx) ->
     gfx.resetTransform()
-    gfx.clearRect(0, 0, @width, @height)
+    gfx.fillStyle = '#eee'
+    gfx.fillRect(0, 0, @width, @height)
     if @env
       @env.render(gfx)
     return

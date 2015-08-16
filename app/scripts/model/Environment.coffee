@@ -80,7 +80,7 @@ module.exports = class Environment
     return
 
   render: (gfx) ->
-    gfx.strokeStyle = '#259'
+    gfx.strokeStyle = '#888' #'#259'
     gfx.lineWidth = 1
     gfx.beginPath()
     gfx.moveTo(0, 600)

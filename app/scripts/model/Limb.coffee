@@ -9,6 +9,7 @@ module.exports = class Limb extends AbstractEntity
     return
 
   setCollisionGroup: (group) ->
+    @collisionGroup = group
     for segment in @segments
       segment.setCollisionGroup(group)
     return

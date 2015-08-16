@@ -14,11 +14,11 @@ world = env.getWorld()
 # Create a Skeletal model with Limbs
 spiderMachine = new SpiderMachine({
   world: world
-  x: 500
+  x: 300
   y: 400
-  angle: -0.3
-  width: 150
-  height: 40
+  angle: 0.0
+  width: 110
+  height: 60
 })
 env.addEntity(spiderMachine)
 
