@@ -35,7 +35,8 @@
       "renderer": "./app/scripts/view/CanvasRenderer",
       "model": "./app/scripts/model",
       "view": "./app/scripts/view",
-      "controller": "./app/scripts/controller"
+      "controller": "./app/scripts/controller",
+      "kinematics": "./app/scripts/kinematics/KinematicsEngine"
     }
   }
 }

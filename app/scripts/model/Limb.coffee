@@ -1,6 +1,7 @@
 p2 = require('p2')
 AbstractEntity = require('./AbstractEntity')
 COLLISION = require('enum/collision')
+KinematicsEngine = require('kinematics')
 
 module.exports = class Limb extends AbstractEntity
   constructor: (@world) ->
@@ -71,6 +72,19 @@ module.exports = class Limb extends AbstractEntity
       segment.body.angle = startAngle
       startX += dX
       startY += dY
+    return
+
+  reachPose: (goalPose) ->
+    resultParams = KinematicsEngine.solve({
+      model: {}
+      startPose: {}
+      goalPose: goalPose
+      iterations: 10
+    })
+    for i in [0..resultParams.length]
+      segment = @segments[i]
+      if segment
+        segment.setDesiredAngle(resultParams[i])
     return
 
   setSkeleton: (@skeleton) ->

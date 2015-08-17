@@ -33,9 +33,9 @@ module.exports = class PIDController
       @_accumulated = -@maxAccumulated
 
     # Compute PID gain
-    gain =  difference * @Kp * 0.1#* (Math.abs(difference))
+    gain =  difference * @Kp
     gain += @_accumulated * @Ki
-    gain += derivative * @Kd * 1.0 #/ (Math.abs(difference) * 5.0 + 1.0)
+    gain += derivative * @Kd
 
     # Threshold the gain
     if gain > @maxGain

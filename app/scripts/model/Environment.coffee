@@ -34,7 +34,7 @@ module.exports = class Environment
     window.GROUND = new p2.Material()
     window.MUSCLE = new p2.Material()
     window.TEST = new p2.ContactMaterial(window.GROUND, window.MUSCLE, {
-      friction : 100.0
+      friction : 10.0
     })
     @world.addContactMaterial(window.TEST)
     return

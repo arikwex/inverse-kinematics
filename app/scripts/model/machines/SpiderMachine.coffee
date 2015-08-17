@@ -8,6 +8,9 @@ module.exports = class ArmMachine extends Skeleton
   constructor: (options) ->
     super(options)
 
+    @config = options.config
+    @begin = 0
+
     @setTexture({
       width: 380
       height: 120
@@ -15,36 +18,36 @@ module.exports = class ArmMachine extends Skeleton
     })
 
     @generateLimb({
-      femurAngle: 25
-      tibiaAngle: -110
-      tarsusAngle: 60
+      femurAngle: @config.femurAngle
+      tibiaAngle: @config.tibiaAngle
+      tarsusAngle: @config.tarsusAngle
       mountX: options.width / 8.0
       mountY: 40
       group: COLLISION.MUSCLE_FRONT
     })
 
     @generateLimb({
-      femurAngle: 155
-      tibiaAngle: 110
-      tarsusAngle: -60
+      femurAngle: 180 - @config.femurAngle
+      tibiaAngle: -@config.tibiaAngle
+      tarsusAngle: -@config.tarsusAngle
       mountX: -options.width / 8.0
       mountY: 40
       group: COLLISION.MUSCLE_FRONT
     })
 
     @generateLimb({
-      femurAngle: 25
-      tibiaAngle: -110
-      tarsusAngle: 60
+      femurAngle: @config.femurAngle
+      tibiaAngle: @config.tibiaAngle
+      tarsusAngle: @config.tarsusAngle
       mountX: options.width / 8.0
       mountY: 40
       group: COLLISION.MUSCLE_BACK
     })
 
     @generateLimb({
-      femurAngle: 155
-      tibiaAngle: 110
-      tarsusAngle: -60
+      femurAngle: 180 - @config.femurAngle
+      tibiaAngle: -@config.tibiaAngle
+      tarsusAngle: -@config.tarsusAngle
       mountX: -options.width / 8.0
       mountY: 40
       group: COLLISION.MUSCLE_BACK
@@ -66,21 +69,21 @@ module.exports = class ArmMachine extends Skeleton
           .endPadding(10)
           .bodySize(50, 10)
           .setAngle(femurAngle)
-          .setController(@createPIDController(250, 1, -1, 1500))
+          .setController(@createPIDController(200, 0, -1, 1500))
           .build())
         .addSegment(new SegmentBuilder(@world)
           .startPadding(10)
           .endPadding(10)
-          .bodySize(110, 10)
+          .bodySize(90, 10)
           .setAngle(tibiaAngle)
-          .setController(@createPIDController(550, 1, -3, 1500))
+          .setController(@createPIDController(350, 0, -1, 1500))
           .build())
         .addSegment(new SegmentBuilder(@world)
           .startPadding(30)
           .endPadding(0)
           .bodySize(110, 10)
           .setAngle(tarsusAngle)
-          .setController(@createPIDController(1550, 1, -2, 1500))
+          .setController(@createPIDController(550, 0, -1, 1500))
           .build())
       mountX: mountX
       mountY: mountY
@@ -95,7 +98,7 @@ module.exports = class ArmMachine extends Skeleton
       src: 'images/leg_top.png'
     })
     newLimb.segments[1].setTexture({
-      width: 120
+      width: 100
       height: 35 * flip
       src: 'images/leg_middle.png'
     })
@@ -111,8 +114,8 @@ module.exports = class ArmMachine extends Skeleton
 
   createPIDController: () ->
     return new PIDController({
-      Kp: arguments[0] * 205
-      Ki: arguments[1] * 115
+      Kp: arguments[0] * 25
+      Ki: arguments[1] * 15
       Kd: arguments[2] * 110
       maxGain: arguments[3] * 3
       maxAccumulated: 0.5
@@ -120,19 +123,39 @@ module.exports = class ArmMachine extends Skeleton
 
   update: (dT) ->
     super(dT)
-    time = +new Date() / 1000.0 * 1.5
+    time = +new Date() / 1000.0 * 0.0#@config.gateSpeed
+    if @begin < 0.6
+      time = (+new Date() / 1000.0 + (0.6 - @begin)) * @config.gateSpeed
+      @begin += dT
+
+    d2r = Math.PI / 180.0
+    femurBalance = @getAngle()
+    tibiaBalance = -@getAngle()
+
     limb = @limbs[0]
-    limb.segments[1].setDesiredAngle(Math.cos(time + 3) * 0.35 - 60 / 57.3)
-    limb.segments[2].setDesiredAngle(Math.cos(time - 2.4 + 3) * 0.4 + 1.97)
+    limb.reachPose({
+      x: window.MOUSE.x
+      y: window.MOUSE.y
+    })
+    #limb.segments[0].setDesiredAngle(@config.femurAngle * d2r - femurBalance)
+    #limb.segments[1].setDesiredAngle(Math.cos(time + 3) * @config.tibiaSpan + @config.tibiaAngle * d2r - tibiaBalance)
+    #limb.segments[2].setDesiredAngle(Math.cos(time - @config.tarsusPhase + 3) * @config.tarsusSpan + @config.tarsusAngle * d2r)
 
     limb = @limbs[2]
-    limb.segments[1].setDesiredAngle(Math.cos(time) * 0.35 - 60 / 57.3)
-    limb.segments[2].setDesiredAngle(Math.cos(time - 2.4) * 0.4 + 1.97)
+    limb.powerDown()
+    # limb.segments[0].setDesiredAngle(@config.femurAngle * d2r - femurBalance)
+    # limb.segments[1].setDesiredAngle(Math.cos(time) * @config.tibiaSpan + @config.tibiaAngle * d2r - tibiaBalance)
+    # limb.segments[2].setDesiredAngle(Math.cos(time - @config.tarsusPhase) * @config.tarsusSpan + @config.tarsusAngle * d2r)
 
     limb = @limbs[1]
-    limb.segments[1].setDesiredAngle(Math.cos(-time + 1.57) * 0.35 + 60 / 57.3)
-    limb.segments[2].setDesiredAngle(Math.cos(-time - 2.4 + 1.57) * 0.4 - 1.97)
+    limb.powerDown()
+    # limb.segments[0].setDesiredAngle((180 - @config.femurAngle) * d2r - femurBalance)
+    # limb.segments[1].setDesiredAngle(Math.cos(-time + 1.57) * @config.tibiaSpan - @config.tibiaAngle * d2r - tibiaBalance)
+    # limb.segments[2].setDesiredAngle(Math.cos(-time - @config.tarsusPhase + 1.57) * @config.tarsusSpan - @config.tarsusAngle * d2r)
 
     limb = @limbs[3]
-    limb.segments[1].setDesiredAngle(Math.cos(-time + 1.57 - 3) * 0.35  + 60 / 57.3)
-    limb.segments[2].setDesiredAngle(Math.cos(-time - 2.4 + 1.57 - 3) * 0.4 - 1.97)
+    limb.powerDown()
+    # limb.segments[0].setDesiredAngle((180 - @config.femurAngle) * d2r - femurBalance)
+    # limb.segments[1].setDesiredAngle(Math.cos(-time + 1.57 - 3) * @config.tibiaSpan - @config.tibiaAngle * d2r - tibiaBalance)
+    # limb.segments[2].setDesiredAngle(Math.cos(-time - @config.tarsusPhase + 1.57 - 3) * @config.tarsusSpan - @config.tarsusAngle * d2r)
+    return

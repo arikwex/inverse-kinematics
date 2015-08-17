@@ -2,7 +2,7 @@ p2 = require('p2')
 AbstractEntity = require('./AbstractEntity')
 COLLISION = require('enum/collision')
 
-DENSITY = 0.003
+DENSITY = 0.006
 
 module.exports = class Skeleton extends AbstractEntity
   constructor: (options) ->
