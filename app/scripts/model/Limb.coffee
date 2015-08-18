@@ -1,7 +1,8 @@
 p2 = require('p2')
 AbstractEntity = require('./AbstractEntity')
 COLLISION = require('enum/collision')
-KinematicsEngine = require('kinematics')
+KinematicsEngine = require('kinematics/KinematicsEngine')
+KinematicsModel = require('kinematics/KinematicsModel')
 
 module.exports = class Limb extends AbstractEntity
   constructor: (@world) ->
@@ -75,16 +76,16 @@ module.exports = class Limb extends AbstractEntity
     return
 
   reachPose: (goalPose) ->
-    resultParams = KinematicsEngine.solve({
-      model: {}
-      startPose: {}
+    resultState = KinematicsEngine.solve({
+      model: @getModel()
+      startState: @getSegmentState()
       goalPose: goalPose
       iterations: 10
     })
-    for i in [0..resultParams.length]
+    for i in [0..resultState.length-1]
       segment = @segments[i]
       if segment
-        segment.setDesiredAngle(resultParams[i])
+        segment.setDesiredAngle(resultState[i])
     return
 
   setSkeleton: (@skeleton) ->
@@ -124,3 +125,32 @@ module.exports = class Limb extends AbstractEntity
       @segments[0].dispose()
     @skeleton.removeLimb(@)
     return
+
+  getSegmentState: () ->
+    state = Array(@segments.length)
+    for i in [0..state.length-1]
+      state[i] = @segments[i].getAngle()
+    return state
+
+  getModel: () ->
+    skeleton = @skeleton
+    segments = @segments
+    mountX = @mountX
+    mountY = @mountY
+    model = class LimbModel extends KinematicsModel
+      computePose: (state) ->
+        pose = [skeleton.getX(), skeleton.getY(), skeleton.getAngle()]
+        C = Math.cos(pose[2])
+        S = Math.sin(pose[2])
+        pose[0] += C * mountX - S * mountY
+        pose[1] += S * mountX + C * mountY
+        for i in [0..state.length-1]
+          segment = segments[i]
+          dA = state[i]
+          pose[2] += dA
+          dX = Math.cos(pose[2]) * segment.width
+          dY = Math.sin(pose[2]) * segment.width
+          pose[0] += dX
+          pose[1] += dY
+        return [pose[0], pose[1]]
+    return new model()

@@ -114,9 +114,9 @@ module.exports = class ArmMachine extends Skeleton
 
   createPIDController: () ->
     return new PIDController({
-      Kp: arguments[0] * 25
+      Kp: arguments[0] * 15
       Ki: arguments[1] * 15
-      Kd: arguments[2] * 110
+      Kd: arguments[2] * 50
       maxGain: arguments[3] * 3
       maxAccumulated: 0.5
     })
@@ -133,10 +133,10 @@ module.exports = class ArmMachine extends Skeleton
     tibiaBalance = -@getAngle()
 
     limb = @limbs[0]
-    limb.reachPose({
-      x: window.MOUSE.x
-      y: window.MOUSE.y
-    })
+    limb.reachPose([
+      window.MOUSE.x
+      window.MOUSE.y
+    ])
     #limb.segments[0].setDesiredAngle(@config.femurAngle * d2r - femurBalance)
     #limb.segments[1].setDesiredAngle(Math.cos(time + 3) * @config.tibiaSpan + @config.tibiaAngle * d2r - tibiaBalance)
     #limb.segments[2].setDesiredAngle(Math.cos(time - @config.tarsusPhase + 3) * @config.tarsusSpan + @config.tarsusAngle * d2r)

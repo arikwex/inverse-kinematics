@@ -1,16 +1,29 @@
+solverMap = {
+  'Newton-Raphson': require('./solvers/NewtonRaphsonSolver')
+}
+
 class KinematicsEngine
   constructor: () ->
     return
 
   solve: (options) ->
     { @model
-      @startPose
-      @endPose
+      @startState
+      @goalPose
       @iterations
       @method } = options
 
     @method = @method || 'Newton-Raphson'
     @iterations = @iterations || 10
-    return [0, -1.57, 1.57]
+
+    SolverMethod = solverMap[@method]
+    if SolverMethod
+      return SolverMethod.solve(
+        @model
+        @startState
+        @goalPose
+        @iterations)
+
+    return []
 
 module.exports = new KinematicsEngine()
