@@ -35,6 +35,7 @@ module.exports = class Skeleton extends AbstractEntity
     limb.setSkeleton(@)
     limb.setMountingPoint(mountX, mountY)
     limb.smartPositioning()
+    limb.generateModel()
     return limb
 
   removeLimb: (limbToRemove) ->

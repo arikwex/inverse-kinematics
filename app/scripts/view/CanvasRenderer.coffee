@@ -1,6 +1,8 @@
 p2 = require('p2');
 
 module.exports = {
+  WIREFRAME: false
+
   visualizations: {
     'skeleton': require('./visualizations/skeleton')
     'limb': require('./visualizations/limb')

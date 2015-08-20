@@ -10,11 +10,11 @@ module.exports = {
     gfx.setTransform(cos, sin, -sin, cos, x, y)
 
     txtr = segment.getTexture()
-    if txtr != null
+    if txtr != null and !self.WIREFRAME
       scaling_x = txtr.width / txtr.image.width
       scaling_y = txtr.height / txtr.image.height
       gfx.scale(scaling_x, scaling_y)
-      gfx.drawImage(txtr.image, -txtr.width / 2.0 / scaling_x, -txtr.height / 2.0 / scaling_y)
+      gfx.drawImage(txtr.image, -txtr.width / 2.0 / scaling_x + txtr.offsetX, -txtr.height / 2.0 / scaling_y + txtr.offsetY)
     else
       gfx.strokeStyle = '#000'
       gfx.beginPath()

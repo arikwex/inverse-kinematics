@@ -72,11 +72,15 @@ module.exports = class Segment
   setTexture: (options) ->
     { width
       height
+      offsetX
+      offsetY
       src } = options
     @txtr = {
       image: new Image()
       width: width
       height: height
+      offsetX: offsetX || 0
+      offsetY: offsetY || 0
     }
     @txtr.image.src = src
     return
@@ -138,6 +142,8 @@ module.exports = class Segment
     return @getAngle()
 
   setDesiredAngle: (@desiredAngle) ->
+    eps = 0.001
+    @previousConstraint.setLimits(@desiredAngle - eps, @desiredAngle + eps);
     return
 
   getDesiredAngle: () ->

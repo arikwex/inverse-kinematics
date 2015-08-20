@@ -16,6 +16,9 @@ class KinematicsEngine
     @method = @method || 'Newton-Raphson'
     @iterations = @iterations || 10
 
+    if not @model
+      return @startState
+
     SolverMethod = solverMap[@method]
     if SolverMethod
       return SolverMethod.solve(

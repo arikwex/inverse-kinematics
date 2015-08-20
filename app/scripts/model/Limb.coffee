@@ -64,7 +64,7 @@ module.exports = class Limb extends AbstractEntity
     startX = @skeleton.getX() + C * @mountX - S * @mountY
     startY = @skeleton.getY() + S * @mountX + C * @mountY
     for segment in @segments
-      dA = segment.getAngle()
+      dA = segment.desiredAngle
       startAngle += dA
       dX = Math.cos(startAngle) * segment.width
       dY = Math.sin(startAngle) * segment.width
@@ -75,12 +75,24 @@ module.exports = class Limb extends AbstractEntity
       startY += dY
     return
 
+  reachRelativePose: (relPose) ->
+    startAngle = @skeleton.getAngle()
+    C = Math.cos(startAngle)
+    S = Math.sin(startAngle)
+    startX = @skeleton.getX() + C * @mountX - S * @mountY
+    startY = @skeleton.getY() + S * @mountX + C * @mountY
+    @reachPose([
+      startX + relPose[0]
+      startY + relPose[1]
+    ])
+    return
+
   reachPose: (goalPose) ->
     resultState = KinematicsEngine.solve({
       model: @getModel()
       startState: @getSegmentState()
       goalPose: goalPose
-      iterations: 10
+      iterations: 5
     })
     for i in [0..resultState.length-1]
       segment = @segments[i]
@@ -129,15 +141,18 @@ module.exports = class Limb extends AbstractEntity
   getSegmentState: () ->
     state = Array(@segments.length)
     for i in [0..state.length-1]
-      state[i] = @segments[i].getAngle()
+      state[i] = @segments[i].getRelativeAngle()
     return state
 
   getModel: () ->
+    return @model
+
+  generateModel: () ->
     skeleton = @skeleton
     segments = @segments
     mountX = @mountX
     mountY = @mountY
-    model = class LimbModel extends KinematicsModel
+    Model = class LimbModel extends KinematicsModel
       computePose: (state) ->
         pose = [skeleton.getX(), skeleton.getY(), skeleton.getAngle()]
         C = Math.cos(pose[2])
@@ -153,4 +168,4 @@ module.exports = class Limb extends AbstractEntity
           pose[0] += dX
           pose[1] += dY
         return [pose[0], pose[1]]
-    return new model()
+    @model = new Model()

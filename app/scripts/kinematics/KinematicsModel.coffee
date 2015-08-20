@@ -18,14 +18,14 @@ module.exports = class KinematicsModel
     currentPose = @computePose(state)
     Npose = currentPose.length
 
-    jacobian = Array(Npose)
-    for i in [0..Npose-1]
-      jacobian[i] = Array(Nstate)
+    jacobian = Array(Nstate)
+    for i in [0..Nstate-1]
+      jacobian[i] = Array(Npose)
 
-    for j in [0..Nstate-1]
-      dP_dj = @computePoseDerivative(currentPose, state, j)
-      for i in [0..Npose-1]
-        jacobian[i][j] = dP_dj[i]
+    for i in [0..Nstate-1]
+      dP_di = @computePoseDerivative(currentPose, state, i)
+      for j in [0..Npose-1]
+        jacobian[i][j] = dP_di[j]
     return jacobian
 
   computePoseDerivative: (pose, state, stateVaryIndex) ->

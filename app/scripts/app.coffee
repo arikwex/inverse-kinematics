@@ -17,6 +17,13 @@ $(window).mousemove((evt) ->
   window.MOUSE.y = evt.clientY
 )
 
+$(window).mousedown((evt) ->
+  part = frame.env.entities[0].limbs[10].segments[0].body
+  angle = part.angle
+  M = -10000
+  part.applyImpulse(p2.vec2.fromValues(Math.cos(angle)*M, Math.sin(angle)*M), p2.vec2.fromValues(0,0))
+)
+
 # Create environment for physics & entities
 env = new Environment()
 world = env.getWorld()
@@ -31,8 +38,6 @@ generateSpider = (config) ->
     x: 300
     y: 400
     angle: 0.0
-    width: 110
-    height: 60
     config: config
   })
   env.addEntity(spiderMachine)
@@ -40,26 +45,17 @@ generateSpider = (config) ->
 
 # Default spider config
 baseConfig = {
-  femurAngle: 25
+  femurAngle: 15
   tibiaAngle: -60
-  tarsusAngle: 100
-  tibiaSpan: 0.25
-  tarsusSpan: 0.5
+  tarsusAngle: 120
+  tibiaSpan: 0.3
+  tarsusSpan: 0.6
   tarsusPhase: 1.9
-  gateSpeed: 2.5
+  gateSpeed: 4.5
 }
 generateSpider(baseConfig)
-###
-baseConfig = {
-  femurAngle: 24.42615076307438
-  gateSpeed: 1.6282177221874918
-  tarsusAngle: 142.79114308352214
-  tarsusPhase: 1.4457514680190162
-  tarsusSpan: 0.5152727080105194
-  tibiaAngle: -71.79667999147192
-  tibiaSpan: 0.6367783120112606
-}
 
+###
 # Generate a config pool
 configPool = []
 mutateConfig = (config) ->

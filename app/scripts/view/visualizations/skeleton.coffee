@@ -1,10 +1,16 @@
-Renderer = require('renderer')
 COLLISION = require('enum/collision')
 
 module.exports = {
   render: (self, gfx, skeleton) ->
     for limb in skeleton.limbs
+      if limb.collisionGroup == COLLISION.MUSCLE_BACK2
+        self.render(gfx, limb)
+    for limb in skeleton.limbs
       if limb.collisionGroup == COLLISION.MUSCLE_BACK
+        self.render(gfx, limb)
+
+    for limb in skeleton.limbs
+      if limb.collisionGroup == COLLISION.MUSCLE_MIDDLE
         self.render(gfx, limb)
 
     angle = skeleton.getAngle()
@@ -15,7 +21,7 @@ module.exports = {
     gfx.setTransform(cos, sin, -sin, cos, x, y)
 
     txtr = skeleton.getTexture()
-    if txtr != null
+    if txtr != null and !self.WIREFRAME
       scaling_x = txtr.width / txtr.image.width
       scaling_y = txtr.height / txtr.image.height
       gfx.scale(scaling_x, scaling_y)
@@ -29,6 +35,9 @@ module.exports = {
 
     for limb in skeleton.limbs
       if limb.collisionGroup == COLLISION.MUSCLE_FRONT
+        self.render(gfx, limb)
+    for limb in skeleton.limbs
+      if limb.collisionGroup == COLLISION.MUSCLE_FRONT2
         self.render(gfx, limb)
     return
 }

@@ -28,13 +28,13 @@ module.exports = class Environment
 
     # Configure solver
     @world.solver.iterations = 20            # Max number of solver iterations to do
-    @world.solver.tolerance = 0.02           # Solver error tolerance
+    @world.solver.tolerance = 0.01           # Solver error tolerance
 
     #
     window.GROUND = new p2.Material()
     window.MUSCLE = new p2.Material()
     window.TEST = new p2.ContactMaterial(window.GROUND, window.MUSCLE, {
-      friction : 10.0
+      friction : 2.0
     })
     @world.addContactMaterial(window.TEST)
     return
